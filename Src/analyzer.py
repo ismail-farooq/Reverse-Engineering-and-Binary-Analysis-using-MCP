@@ -1,5 +1,6 @@
 from bridge_mcp_ghidra import *
 from models import FunctionSummary, BinarySummary
+from pathlib import Path
 import json
 
 # Define API patterns to flag functions
@@ -68,4 +69,13 @@ binary.strings = list_strings()
 binary.imports = list_imports()
 
 # Output JSON
-print(json.dumps(binary.to_dict(), indent=2))
+def serialize(obj):
+    if hasattr(obj, "__dict__"):
+        return obj.__dict__
+    return str(obj)  # fallback for anything else
+
+output_file = "binary_analysis.json"
+with open(output_file, "w") as f:
+    json.dump(binary, f, indent=2, default=serialize)
+
+print(f"Analysis saved to {output_file}")
